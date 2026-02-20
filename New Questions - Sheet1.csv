@@ -1,0 +1,54 @@
+no.,Category,Roles,Prescreening Questions (numbered),Why Categorized This Way:
+1,Image & Video Data Collection / Media,"1. Casual Video Models (Video Data Collection)
+ 2. Image Data Collector (Capturing Text – Rich Items)
+ 3. Image Data Collector (Capturing Home Dishes and Menu)
+ 4. AI Video Creator/Editor","1. Can you describe your experience capturing or creating high-quality images or videos?
+ 2. How do you ensure proper lighting, framing, and clarity in your content?
+ 3. How do you follow guidelines or instructions when producing media content?
+ 4. Can you share a time when you had to meet a tight deadline while maintaining quality?
+ 5. How do you handle feedback or revisions during content creation?","All these roles involve visual content creation. Grouping them allows the interviewer to assess camera skills, attention to detail, guideline adherence, and production quality without mixing in irrelevant skills like audio recording or text data."
+2,Voice / Audio Data Collection,"1. Moderator & Voice Participants (Voice Data Collection)
+ 2. Voice Recording Participants (Short Sentences Recording)
+ 3. Voice Recording Participants (FaceTime Audio Recording Session)
+ 4. Data Annotator (iPhone User – audio annotation tasks)","1. Can you describe any experience you have with voice or audio recording?
+ 2. How do you ensure clarity and consistency in your recordings?
+ 3. How do you follow a script or instructions during a voice session?
+ 4. Can you describe a time when you had to complete a session under strict quality requirements?
+ 5. How do you troubleshoot technical or environmental issues (e.g., noise, device problems) during recording?","Voice-related roles require audio clarity, script adherence, and technical readiness. Categorizing ensures interviews evaluate these specific competencies without introducing unrelated questions about visual or text tasks."
+3,Text / Data Collection & Curation,"1. Text Data Collector (Gemini User)
+ 2. Data Scraper/Crawler (Int’l Text)
+ 3. Data Curation (Genealogy Project – entry-level)","1. Can you describe your experience with text data collection or annotation?
+ 2. How do you ensure accuracy and consistency when working with large volumes of text?
+ 3. What strategies do you use to verify data from multiple sources?
+ 4. How do you follow detailed guidelines or templates when curating data?
+ 5. How do you manage deadlines while maintaining data quality?","Text-based roles require accuracy, consistency, and guideline adherence, which differs from audio or visual roles. Grouping ensures interviews focus on data handling and analytical skills."
+4,Genealogy / Specialized Data Projects,"1. Data Curation (Genealogy Project – advanced/entry-level distinction)
+ 2. Genealogy Project Team Leader","1. Can you describe your experience with genealogical research or historical data?
+ 2. How do you ensure the reliability and accuracy of genealogical records?
+ 3. How do you handle sensitive or private information responsibly?
+ 4. How do you document and organize genealogical data to maintain consistency?
+ 5. How do you coordinate tasks or lead a team in a data curation project?","These roles require specialized knowledge in genealogy and project oversight. Separating them allows for assessing domain knowledge, leadership, and organizational skills specific to genealogy."
+5,Internships (Philippines Only),"1. Intern (Applicable to PH Only) BSIT
+ 2. Intern (Applicable to PH Only) BS Computer Engineering
+ 3. Intern (Applicable to PH Only) BS Finance/Accounting
+ 4. Intern (Applicable to PH Only) BS Psychology
+ 5. Intern (Applicable to PH Only) BSBA Marketing
+ 6. Intern (Applicable to PH Only) BSBA General Management","1. What motivates you to apply for this internship and this field?
+ 2. Can you describe relevant coursework, projects, or experiences that prepare you for this role?
+ 3. How do you handle multiple tasks or deadlines in a learning environment?
+ 4. How do you approach learning a new skill or tool quickly?
+ 5. How do you ensure accuracy and attention to detail in your work?","Intern roles are entry-level but vary by academic background. Grouping them allows interviews to assess learning ability, adaptability, and potential, while minimizing irrelevant technical questions."
+6,Administrative / Support Roles,"1. Admin Accounting
+ 2. Admin HR
+ 3. Operation Manager","1. Can you describe your experience performing administrative tasks, such as scheduling, record-keeping, or payroll?
+ 2. How do you ensure accuracy when handling sensitive information?
+ 3. How do you prioritize tasks when managing multiple responsibilities?
+ 4. How do you use office tools like Excel, Google Workspace, or HRIS in your work?
+ 5. Can you share a time you suggested improvements to existing administrative processes?","Admin roles focus on organizational skills, accuracy, and process compliance. Categorizing ensures interviews evaluate these core competencies without including production, audio, or research questions."
+7,Marketing & Research,"1. Social Media Content Marketing
+ 2. Marketing Researcher
+ 3. Marketing & Sales Executive","1. Can you describe your experience with social media campaigns, content creation, or marketing research?
+ 2. How do you analyze data to inform marketing strategies?
+ 3. How do you manage deadlines while maintaining quality in content or research?
+ 4. How do you adapt messaging for different audiences or platforms?
+ 5. Can you share an example of using analytics or reports to improve results?","Marketing/research roles require audience insight, creativity, and analytical skills. Categorization ensures interviews focus on strategic thinking and data-informed decision-making rather than unrelated technical skills."
