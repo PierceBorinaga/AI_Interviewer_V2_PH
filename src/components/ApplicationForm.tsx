@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { FileUpload } from "./FileUpload";
 import { CustomDropdown } from "./CustomDropdown";
-import { Loader2, CheckCircle2, X } from "lucide-react";
-import { ALL_POSITIONS, POSITION_TO_CATEGORY, CATEGORIES } from "@/config/positions";
+import { Loader2 } from "lucide-react";
+import { ALL_POSITIONS } from "@/config/positions";
 
 const COUNTRY_CODES = [
     { label: "+1 (US/Canada)", value: "+1" },
@@ -85,6 +86,17 @@ export function ApplicationForm() {
     const [file, setFile] = useState<File | null>(null);
     const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
     const [errorMessage, setErrorMessage] = useState<string>("");
+    const [interviewLink, setInterviewLink] = useState<string>("");
+    const router = useRouter();
+
+    useEffect(() => {
+        if (status === "success" && interviewLink) {
+            const timer = setTimeout(() => {
+                router.push(interviewLink);
+            }, 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [status, interviewLink, router]);
 
     const handlePositionSelect = (position: string) => {
         if (position === "Intern (Applicable to PH Only)") {
@@ -189,10 +201,16 @@ export function ApplicationForm() {
                 throw new Error(errorData.error || "Submission failed");
             }
 
+            const result = await res.json();
+            if (result.interviewLink) {
+                setInterviewLink(result.interviewLink);
+            }
+
             setStatus("success");
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error(error);
-            setErrorMessage(error.message || "An unexpected error occurred");
+            const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+            setErrorMessage(errorMessage);
             setStatus("error");
         }
     };
@@ -290,9 +308,19 @@ export function ApplicationForm() {
                         <h2 className="text-4xl font-bold text-white mb-4">Application Received!</h2>
                         <div className="space-y-4 text-gray-300 max-w-md mx-auto text-lg">
                             <p>Thank you, {formData.firstName}!</p>
-                            <p>We've received your application and will review it shortly.</p>
-                            <p className="font-medium">You will receive an email from lifewoodph@gmail.com
-                                containing your one-time interview link. Important: Please check your Spam/Junk folder as well, in case the email doesn't appear in your main inbox..</p>
+                            <p>We&apos;ve received your application and will review it shortly.</p>
+                            <p className="text-sm font-semibold text-[var(--color-saffaron)] animate-pulse">
+                                Redirecting you to the AI interview page...
+                            </p>
+                            <div className="mt-6 pt-6 border-t border-white/10">
+                                <p className="text-xs text-gray-400">
+                                    A backup link has been sent to <span className="text-white">{formData.email}</span>.
+                                </p>
+                                <p className="text-xs text-gray-400 mt-2 italic">
+                                    Note: If you need to retake the interview, please contact IT at
+                                    <span className="text-white ml-1">lifewoodph@gmail.com</span> before you can use the link again.
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>

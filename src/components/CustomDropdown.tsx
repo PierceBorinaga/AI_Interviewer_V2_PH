@@ -33,7 +33,7 @@ export function CustomDropdown({
     const [searchTerm, setSearchTerm] = useState("");
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    const normalizedOptions: Option[] = options.map(opt => 
+    const normalizedOptions: Option[] = options.map(opt =>
         typeof opt === "string" ? { label: opt, value: opt } : opt
     );
 
@@ -47,16 +47,17 @@ export function CustomDropdown({
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
                 setIsOpen(false);
+                setSearchTerm("");
             }
         };
 
         if (isOpen) {
             document.addEventListener("mousedown", handleClickOutside);
-        } else {
-            setSearchTerm("");
         }
 
-        return () => document.removeEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
     }, [isOpen]);
 
     const handleSelect = (optionValue: string) => {
@@ -123,18 +124,18 @@ export function CustomDropdown({
                     </div>
                 </div>
             )}
-            
+
             {required && !value && (
                 <input
                     type="text"
                     required
                     value=""
-                    onChange={() => {}}
+                    onChange={() => { }}
                     className="absolute opacity-0 pointer-events-none h-0 w-0"
                     tabIndex={-1}
                 />
             )}
-            
+
             <style jsx>{`
                 .custom-scrollbar::-webkit-scrollbar {
                     width: 6px;

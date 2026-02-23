@@ -43,7 +43,7 @@ export function HelpPopup({ isOpen, onClose }: HelpPopupProps) {
           <h2 className="text-2xl font-bold text-[var(--color-dark-serpent)] mb-6">
             About Your Application
           </h2>
-          
+
           <div className="space-y-6">
             <div className="space-y-2">
               <h3 className="text-lg font-semibold text-[var(--color-castleton-green)]">
@@ -52,6 +52,7 @@ export function HelpPopup({ isOpen, onClose }: HelpPopupProps) {
               <p className="text-gray-700">
                 Thank you for your interest in joining our team! This application form is the first step in our hiring process.
               </p>
+              <p className="text-gray-300 mb-6">If you need any assistance with your application, please don&apos;t hesitate to contact us. Our team is here to help you through the process.</p>
             </div>
 
             <div className="space-y-2">
@@ -61,7 +62,7 @@ export function HelpPopup({ isOpen, onClose }: HelpPopupProps) {
               <ul className="list-disc pl-5 space-y-2 text-gray-700">
                 <li>Your application will be reviewed by our HR team</li>
                 <li>Your CV will be evaluated based on our requirements</li>
-                <li>You'll receive a confirmation email with your application details</li>
+                <li>You&apos;ll receive a confirmation email with your application details</li>
                 <li>Our team will contact you if your profile matches our needs</li>
               </ul>
             </div>
@@ -71,7 +72,7 @@ export function HelpPopup({ isOpen, onClose }: HelpPopupProps) {
                 Need Help?
               </h3>
               <p className="text-gray-700">
-                If you encounter any issues or have questions, please contact us at 
+                If you encounter any issues or have questions, please contact us at
                 <a href="mailto:hr@lifewood.com" className="text-[var(--color-castleton-green)] hover:underline ml-1">
                   hr@lifewood.com
                 </a>

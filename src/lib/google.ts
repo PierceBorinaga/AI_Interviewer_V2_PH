@@ -12,11 +12,12 @@ const SCOPES = [
     'https://www.googleapis.com/auth/spreadsheets',
     'https://www.googleapis.com/auth/drive.file',
     'https://www.googleapis.com/auth/drive.appdata',
-    'https://www.googleapis.com/auth/drive.metadata'
+    'https://www.googleapis.com/auth/drive.metadata',
+    'https://www.googleapis.com/auth/gmail.send'
 ];
 
 // Create a new OAuth2 client
-const oauth2Client = new google.auth.OAuth2(
+export const oauth2Client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
     "https://developers.google.com/oauthplayground"
@@ -70,14 +71,6 @@ const sheets = google.sheets({ version: 'v4', auth: oauth2Client });
  */
 export async function uploadToDrive(fileBuffer: Buffer, fileName: string, mimeType: string) {
     try {
-        const fileMetadata = {
-            name: fileName,
-            parents: ['CV_AI_Interviewer'], // Note: This assumes folder ID or Alias. If strictly name is needed, we'd need to search for it first. Ideally this should be a Folder ID from env.
-            // For now, I'll search for the folder first to be safe, or just upload to root if not found.
-            // BETTER APPROACH: Use a specific Folder ID in env, but prompt implies name. 
-            // I will implement a search or create logic for robustness.
-        };
-
         // 1. Find or Create Folder
         let folderId = '';
         const folderRes = await drive.files.list({
@@ -114,23 +107,12 @@ export async function uploadToDrive(fileBuffer: Buffer, fileName: string, mimeTy
             fields: 'id, webViewLink, webContentLink',
         });
 
-        // 3. Make it readable by anyone with the link (Optional, but often needed for external viewers)
-        // await drive.permissions.create({
-        //   fileId: res.data.id!,
-        //   requestBody: {
-        //     role: 'reader',
-        //     type: 'anyone',
-        //   },
-        // });
-
         return res.data.webViewLink;
-    } catch (error: any) {
-        console.error("Drive Upload Error:", error.message);
-        console.error("Error details:", JSON.stringify({
-            code: error.code,
-            status: error.status,
-            errors: error.errors,
-        }, null, 2));
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error("Drive Upload Error:", error.message);
+        }
+        console.error("Error details:", JSON.stringify(error, null, 2));
         throw error;
     }
 }
@@ -153,7 +135,7 @@ export async function checkEmailExists(email: string, sheetName: string = 'Sheet
         const response = await withRetry(async () => {
             return sheets.spreadsheets.values.get({
                 spreadsheetId,
-                range: `'${sheetName}'!A1:Y1000`, // Get data from columns A-Y
+                range: `'${sheetName}'!A1:AZ1000`, // Get data from columns A-AZ (supporting 52 columns)
             });
         });
 
@@ -174,7 +156,7 @@ export async function checkEmailExists(email: string, sheetName: string = 'Sheet
  * @param values Array of values for the row
  * @param sheetName The name of the sheet to append to
  */
-export async function appendToSheet(values: any[], sheetName: string = 'Sheet1') {
+export async function appendToSheet(values: (string | number | boolean | null)[], sheetName: string = 'Sheet1') {
     try {
         const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
 
@@ -211,20 +193,250 @@ export async function appendToSheet(values: any[], sheetName: string = 'Sheet1')
 }
 
 /**
+ * Appends token data to the "Interview Tokens" sheet
+ * @param values [Token, Email, Category, Status, Timestamp]
+ */
+export async function appendToTokenSheet(values: (string | number | boolean | null)[]) {
+    try {
+        const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
+        const sheetName = 'Interview Tokens';
+
+        if (!spreadsheetId) {
+            throw new Error('GOOGLE_SPREADSHEET_ID is not set');
+        }
+
+        await withRetry(async () => {
+            return sheets.spreadsheets.values.append({
+                spreadsheetId,
+                range: `'${sheetName}'!A1:E1`,
+                valueInputOption: 'USER_ENTERED',
+                insertDataOption: 'INSERT_ROWS',
+                requestBody: {
+                    values: [values],
+                },
+            });
+        });
+
+        console.log('Appended to Token Sheet successfully');
+    } catch (error) {
+        console.error('Token Sheet Append Error:', error);
+        throw error;
+    }
+}
+
+/**
+ * Verifies if a token exists and returns its details
+ * @param token The token string to check
+ * @returns Object with email, category, status, or null if not found
+ */
+export async function verifyToken(token: string) {
+    try {
+        const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
+        const sheetName = 'Interview Tokens';
+
+        const response = await sheets.spreadsheets.values.get({
+            spreadsheetId,
+            range: `'${sheetName}'!A2:E`, // Check all rows, skipping header
+        });
+
+        const rows = response.data.values;
+        if (!rows) return null;
+
+        const row = rows.find(r => r[0] === token);
+        if (!row) return null;
+
+        return {
+            token: row[0],
+            email: row[1],
+            category: row[2],
+            status: row[3],
+            timestamp: row[4],
+        };
+    } catch (error) {
+        console.error('Token Verification Error:', error);
+        return null;
+    }
+}
+
+/**
  * Utility to retry a function with exponential backoff
  */
 async function withRetry<T>(fn: () => Promise<T>, retries = 5, delay = 500): Promise<T> {
     try {
         return await fn();
-    } catch (error: any) {
+    } catch (error: unknown) {
         if (retries === 0) throw error;
 
         // Retry on Rate Limits (429) or Server Errors (5xx)
-        const shouldRetry = error.code === 429 || error.code === 500 || error.code === 503;
+        const errorCode = (error as { code?: number }).code;
+        const shouldRetry = errorCode === 429 || errorCode === 500 || errorCode === 503;
         if (!shouldRetry) throw error;
 
         console.log(`Retrying operation... attempts left: ${retries}`);
         await new Promise(res => setTimeout(res, delay));
         return withRetry(fn, retries - 1, delay * 2); // Exponential backoff
     }
+}
+
+/**
+ * Fetches the headers (first row) of a sheet
+ */
+export async function getSheetHeaders(sheetName: string = 'Sheet1'): Promise<string[]> {
+    try {
+        const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
+        const response = await sheets.spreadsheets.values.get({
+            spreadsheetId,
+            range: `'${sheetName}'!1:1`,
+        });
+        return response.data.values?.[0] || [];
+    } catch (error) {
+        console.error("Error fetching sheet headers:", error);
+        return [];
+    }
+}
+
+/**
+ * Updates a row in the sheet based on the email (Column C)
+ */
+export async function updateRowByEmail(email: string, data: Record<string, string>, sheetName: string = 'Sheet1') {
+    try {
+        const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
+
+        // 1. Get all data to find the row
+        const response = await sheets.spreadsheets.values.get({
+            spreadsheetId,
+            range: `'${sheetName}'!A:AZ`, // Expanded range to AZ (52 columns)
+        });
+
+        const rows = response.data.values || [];
+        const headers = rows[0] || [];
+
+        // Normalize headers for robust matching: trim and lowercase
+        const normalizedHeaders = headers.map(h => (h || "").toString().trim().toLowerCase());
+
+        console.log("Sheet Headers (Raw):", headers);
+        if (rows.length > 1) {
+            console.log("First Data Row Sample (Row 2):", rows[1]);
+        }
+
+        // Email is usually in Column C (index 2)
+        const rowIndex = rows.findIndex(row => row[2] && row[2].toString().trim().toLowerCase() === email.toLowerCase().trim());
+
+        if (rowIndex === -1) {
+            console.warn(`Could not find row for email: ${email}. Looked in Column C (Index 2).`);
+            return;
+        }
+
+        // 2. Prepare updates
+        const updates = [];
+        for (const [header, value] of Object.entries(data)) {
+            // Only update if value is not empty to avoid accidental overwrites
+            if (!value) continue;
+
+            // Robust matching: trim and lowercase both target and source
+            const targetHeaderNormalized = header.trim().toLowerCase();
+            const colIndex = normalizedHeaders.indexOf(targetHeaderNormalized);
+
+            if (colIndex !== -1) {
+                console.log(`Matching header "${header}" to column ${indexToColumnLetter(colIndex)} (Index ${colIndex})`);
+                updates.push({
+                    range: `'${sheetName}'!${indexToColumnLetter(colIndex)}${rowIndex + 1}`,
+                    values: [[value]],
+                });
+            } else {
+                console.warn(`Could not find column for header: "${header}" (Normalized: "${targetHeaderNormalized}") in sheet: ${sheetName}`);
+            }
+        }
+
+        // 3. Apply updates
+        if (updates.length > 0) {
+            await sheets.spreadsheets.values.batchUpdate({
+                spreadsheetId,
+                requestBody: {
+                    valueInputOption: 'USER_ENTERED',
+                    data: updates,
+                },
+            });
+        }
+
+        console.log(`Successfully updated row ${rowIndex + 1} for ${email}`);
+    } catch (error) {
+        console.error("Error updating row by email:", error);
+        throw error;
+    }
+}
+
+/**
+ * Updates the status of a token in the "Interview Tokens" sheet
+ */
+export async function updateTokenStatus(token: string, newStatus: string) {
+    try {
+        const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
+        const sheetName = 'Interview Tokens';
+
+        const response = await sheets.spreadsheets.values.get({
+            spreadsheetId,
+            range: `'${sheetName}'!A:E`,
+        });
+
+        const rows = response.data.values || [];
+        const rowIndex = rows.findIndex(row => row[0] === token);
+
+        if (rowIndex === -1) return;
+
+        await sheets.spreadsheets.values.update({
+            spreadsheetId,
+            range: `'${sheetName}'!D${rowIndex + 1}`,
+            valueInputOption: 'USER_ENTERED',
+            requestBody: {
+                values: [[newStatus]],
+            },
+        });
+    } catch (error) {
+        console.error("Error updating token status:", error);
+    }
+}
+
+/**
+ * Checks the interview status of a candidate by their email in a specific sheet
+ */
+export async function getInterviewStatusByEmail(email: string, sheetName: string): Promise<string | null> {
+    try {
+        const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
+        const response = await sheets.spreadsheets.values.get({
+            spreadsheetId,
+            range: `'${sheetName}'!A:AZ`,
+        });
+
+        const rows = response.data.values || [];
+        const headers = rows[0] || [];
+        const emailColIndex = 2; // Column C
+
+        // Normalize headers for searching
+        const normalizedHeaders = headers.map(h => (h || "").toString().trim().toLowerCase());
+        const statusColIndex = normalizedHeaders.indexOf("interview_status");
+
+        if (statusColIndex === -1) {
+            console.warn(`"Interview_Status" column not found in ${sheetName}. Headers found:`, headers);
+            return null;
+        }
+
+        const row = rows.find(r => r[emailColIndex] && r[emailColIndex].toString().trim().toLowerCase() === email.toLowerCase().trim());
+        return row ? row[statusColIndex] : null;
+    } catch (error) {
+        console.error("Error getting interview status:", error);
+        return null;
+    }
+}
+
+/**
+ * Converts a 0-indexed column number to Google Sheets column letter (e.g., 0 -> A, 25 -> Z, 26 -> AA)
+ */
+function indexToColumnLetter(index: number): string {
+    let letter = '';
+    while (index >= 0) {
+        letter = String.fromCharCode((index % 26) + 65) + letter;
+        index = Math.floor(index / 26) - 1;
+    }
+    return letter;
 }

@@ -1,59 +1,66 @@
 @import "tailwindcss";
 
 @theme {
-  /* New Color Palette */
+  /* New Color Palette - Unified */
+  --color-castleton-green: #046241;
+  --color-dark-serpent: #133020;
+  --color-saffaron: #FFB347;
+  --color-earth-yellow: #FFC370;
   --color-paper: #f5eedb;
   --color-white: #ffffff;
   --color-sea-salt: #F9F7F7;
-  --color-dark-serpent: #133020;
-  --color-castleton-green: #046241;
-  --color-saffaron: #FFB347;
-  --color-earth-yellow: #FFC370;
-
-  /* Glass effects */
-  --color-glass-100: rgba(245, 238, 219, 0.4);
-  --color-glass-200: rgba(245, 238, 219, 0.6);
-  --color-glass-300: rgba(245, 238, 219, 0.8);
-  --color-glass-400: rgba(245, 238, 219, 0.9);
-
-  /* Accent colors */
-  --color-accent-primary: var(--color-castleton-green);
-  --color-accent-secondary: var(--color-saffaron);
-  --color-accent-tertiary: var(--color-earth-yellow);
+  --color-obsidian: #0a0a0a;
 
   /* Shadows */
   --shadow-soft: 0 8px 30px rgba(19, 48, 32, 0.1);
   --shadow-glass: 0 8px 32px 0 rgba(4, 98, 65, 0.1);
-  --shadow-inner-soft: inset 0 2px 4px 0 rgba(255, 255, 255, 0.5);
 }
 
 :root {
+  /* Light Theme (Default) */
   --background: var(--color-sea-salt);
   --foreground: var(--color-dark-serpent);
-  --glass-bg: rgba(245, 238, 219, 0.7);
+  --glass-bg: rgba(255, 255, 255, 0.7);
   --glass-border: rgba(4, 98, 65, 0.1);
+  --card-bg: rgba(255, 255, 255, 0.8);
+  --card-border: rgba(4, 98, 65, 0.05);
+  --mute-text: #667e71;
+  --accent-glow: rgba(4, 98, 65, 0.1);
+}
+
+.dark {
+  /* Dark Theme */
+  --background: var(--color-obsidian);
+  --foreground: #f3f4f6;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --card-bg: rgba(255, 255, 255, 0.03);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --mute-text: #9ca3af;
+  --accent-glow: rgba(4, 98, 65, 0.3);
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Glassmorphism Utilities */
 .glass {
   background: var(--glass-bg);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--glass-border);
 }
 
 .glass-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid var(--glass-border);
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--card-border);
   box-shadow: var(--shadow-glass);
 }
 
@@ -67,4 +74,42 @@ body {
 .no-spinner {
   -moz-appearance: textfield;
   appearance: textfield;
+}
+
+/* Custom Animation Keyframes for Robot UI */
+@keyframes wiggle {
+
+  0%,
+  100% {
+    transform: rotate(-8deg);
+  }
+
+  50% {
+    transform: rotate(8deg);
+  }
+}
+
+@keyframes blink {
+
+  0%,
+  4%,
+  100% {
+    transform: scaleY(1);
+  }
+
+  2% {
+    transform: scaleY(0.1);
+  }
+}
+
+@keyframes speakMouth {
+
+  0%,
+  100% {
+    transform: scaleX(1) scaleY(0.2);
+  }
+
+  50% {
+    transform: scaleX(0.9) scaleY(1);
+  }
 }

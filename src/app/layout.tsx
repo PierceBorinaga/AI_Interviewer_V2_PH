@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import { Sidebar } from "@/components/Sidebar";
 import "./globals.css";
 
+import { ThemeProvider } from "@/components/ThemeContext";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -21,17 +23,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.className} antialiased min-h-screen`}
+        className={`${inter.className} antialiased min-h-screen transition-colors duration-300`}
       >
-        <div className="flex min-h-screen relative">
-          {/* Liquid glass background overlay */}
-          <div className="fixed inset-0 backdrop-blur-xl bg-white/5 -z-10"></div>
+        <ThemeProvider>
+          <div className="flex min-h-screen relative overflow-x-hidden">
+            {/* Liquid glass background overlay */}
+            <div className="fixed inset-0 backdrop-blur-xl bg-white/5 -z-10"></div>
 
-          <Sidebar />
-          <main className="flex-1 ml-28 p-8 transition-all duration-300 relative z-20">
-            {children}
-          </main>
-        </div>
+            <Sidebar />
+            <main className="flex-1 ml-28 p-8 transition-all duration-300 relative z-20">
+              {children}
+            </main>
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

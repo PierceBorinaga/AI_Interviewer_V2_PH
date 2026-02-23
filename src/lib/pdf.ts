@@ -5,8 +5,9 @@ export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
         try {
             const pdfParser = new PDFParser(null, true); // true = enable text extraction
 
-            pdfParser.on("pdfParser_dataError", (errData: any) => {
-                console.error("PDF Parser Error:", errData.parserError);
+            pdfParser.on("pdfParser_dataError", (errData: { parserError: unknown } | Error) => {
+                const errorMessage = 'parserError' in errData ? errData.parserError : errData.message;
+                console.error("PDF Parser Error:", errorMessage);
                 resolve("");
             });
 

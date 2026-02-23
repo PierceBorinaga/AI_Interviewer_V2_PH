@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { uploadToDrive, appendToSheet, checkEmailExists } from "@/lib/google";
+import { uploadToDrive, appendToSheet, checkEmailExists, appendToTokenSheet } from "@/lib/google";
 import { extractTextFromPDF } from "@/lib/pdf";
-import { triggerWebhook } from "@/lib/n8n";
 import { POSITION_TO_CATEGORY } from "@/config/positions";
 import { evaluateCV } from "@/lib/ai";
+import { sendInterviewEmail } from "@/lib/email";
+import crypto from "crypto";
 
 export async function POST(req: NextRequest) {
     try {
@@ -19,7 +20,6 @@ export async function POST(req: NextRequest) {
         const age = formData.get("age") as string;
         const currentAddress = formData.get("currentAddress") as string;
         const positionApplied = formData.get("positionApplied") as string;
-        const otherPosition = formData.get("otherPosition") as string;
         const school = formData.get("school") as string;
         const language = formData.get("language") as string;
         const file = formData.get("file") as File;
@@ -48,29 +48,22 @@ export async function POST(req: NextRequest) {
         const buffer = Buffer.from(arrayBuffer);
 
         // 1. Upload CV to Google Drive
-        // Using a timestamp to avoid name collisions if needed, but Drive allows same names. 
-        // Ideally we might want unique names: `CV_${name}_${Date.now()}.pdf`
         const fullName = `${firstName} ${lastName}`;
         const fileName = `CV_${fullName.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
         const webViewLink = await uploadToDrive(buffer, fileName, file.type);
         console.log("Uploaded to Drive:", webViewLink);
 
-        // 2. Append to Google Sheets (A:First Name, B:Last Name, C:Email, D:CV Link, T:Phone, U:Position, P:Gender, Q:Country, R:Age, S:Current Address, Z:School)
-        // Format positions: split by semicolon and replace "Other" with otherPosition if present
-        let finalPosition = positionList.map(pos => pos === "Other" && otherPosition ? otherPosition : pos).join(";");
+        // 2. Generate Interview Token (Still kept for backup/internal tracking)
+        const token = crypto.randomUUID();
+        const origin = req.nextUrl.origin;
+        const interviewLink = `${origin}/interview?email=${encodeURIComponent(email)}&category=${encodeURIComponent(categoryName)}&firstName=${encodeURIComponent(firstName)}`;
+        console.log("Generated Direct Link:", interviewLink);
 
-        // Pre-screening Answers (Columns I-M, indices 8-12) will be empty
-        const qAnswers = ["", "", "", "", ""];
-
-        // 3. Extract Text from PDF
+        // 3. AI Evaluation: Score and Summary
         const cvText = await extractTextFromPDF(buffer);
-        console.log("Extracted PDF Text length:", cvText.length);
-
-        // 4. AI Evaluation: Score and Summary
         console.log("Starting AI evaluation...");
         const aiEvaluation = await evaluateCV(cvText, categoryName);
         const { score, summary } = aiEvaluation;
-        console.log(`AI Evaluation complete. Score: ${score}`);
 
         const fullPhone = `${countryCode}${phone}`;
         const timestamp = new Date().toLocaleString();
@@ -84,45 +77,49 @@ export async function POST(req: NextRequest) {
             summary,            // F (5): CV Summary
             "",                 // G (6): Interview Summary
             "",                 // H (7): Interview_Status
-            ...qAnswers,        // I-M (8-12): Pre-screening Answers (Empty)
-            "",                 // N (13): Token_Status
+            "", "", "", "", "", // I-M (8-12): Pre-screening Answers (Empty)
+            "Pending",          // N (13): Token_Status
             gender,             // O (14): Gender
             country,            // P (15): Country
             age,                // Q (16): Age
             currentAddress,     // R (17): Current Address
             fullPhone,          // S (18): Phone Number
-            finalPosition,      // T (19): Position Applied
+            positionApplied,    // T (19): Position Applied
             timestamp,          // U (20): Timestamp
             "",                 // V (21): Email Sent Time Stamp
             "",                 // W (22): Interview Verdict
-            "",                 // X (23): Unique Links
+            interviewLink,      // X (23): Unique Links
             school || "",       // Y (24): Schools
         ];
 
+        // 4. Update Sheets
         await appendToSheet(rowValues, categoryName);
 
-        // 5. Trigger n8n Webhook
-        const webhookPayload = {
-            name: fullName,
-            email,
-            language,
-            school,
-            cv_url: webViewLink,
-            cv_text: cvText,
-            cv_score: score,
-            cv_summary: summary,
-            submittedAt: new Date().toISOString(),
-        };
+        // Log to "Interview Tokens" tab: [Token, Email, Category, Status, Timestamp]
+        await appendToTokenSheet([token, email, categoryName, "Pending", timestamp]);
 
-        await triggerWebhook(webhookPayload);
-        console.log("Webhook triggered");
+        // 5. Send Personalized Email
+        let emailSentAt = "";
+        try {
+            await sendInterviewEmail(email, firstName, interviewLink);
+            emailSentAt = new Date().toLocaleString();
+            console.log("Email sent and recorded.");
+        } catch (emailError) {
+            console.error("Failed to send email:", emailError);
+            // We continue as the sheet is already updated, but we might want to flag this
+        }
 
-        return NextResponse.json({ success: true, message: "Application processed successfully" });
+        return NextResponse.json({
+            success: true,
+            message: "Application processed successfully",
+            interviewLink: interviewLink
+        });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Submission Error:", error);
+        const errorMessage = error instanceof Error ? error.message : "Internal Server Error";
         return NextResponse.json(
-            { error: "Internal Server Error", details: error.message },
+            { error: "Internal Server Error", details: errorMessage },
             { status: 500 }
         );
     }

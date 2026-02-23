@@ -1,6 +1,7 @@
 export interface Category {
     name: string;
     questions: string[];
+    agentKey: string;
 }
 
 export const CATEGORIES: Record<string, Category> = {
@@ -12,7 +13,8 @@ export const CATEGORIES: Record<string, Category> = {
             "How do you follow guidelines or instructions when producing media content?",
             "Can you share a time when you had to meet a tight deadline while maintaining quality?",
             "How do you handle feedback or revisions during content creation?"
-        ]
+        ],
+        agentKey: "MEDIA"
     },
     "Voice / Audio Data Collection": {
         name: "Voice / Audio Data Collection",
@@ -22,7 +24,8 @@ export const CATEGORIES: Record<string, Category> = {
             "How do you follow a script or instructions during a voice session?",
             "Can you describe a time when you had to complete a session under strict quality requirements?",
             "How do you troubleshoot technical or environmental issues (e.g., noise, device problems) during recording?"
-        ]
+        ],
+        agentKey: "VOICE"
     },
     "Text / Data Collection & Curation": {
         name: "Text / Data Collection & Curation",
@@ -32,7 +35,8 @@ export const CATEGORIES: Record<string, Category> = {
             "What strategies do you use to verify data from multiple sources?",
             "How do you follow detailed guidelines or templates when curating data?",
             "How do you manage deadlines while maintaining data quality?"
-        ]
+        ],
+        agentKey: "TEXT"
     },
     "Genealogy / Specialized Data Projects": {
         name: "Genealogy / Specialized Data Projects",
@@ -42,7 +46,8 @@ export const CATEGORIES: Record<string, Category> = {
             "How do you handle sensitive or private information responsibly?",
             "How do you document and organize genealogical data to maintain consistency?",
             "How do you coordinate tasks or lead a team in a data curation project?"
-        ]
+        ],
+        agentKey: "GENEALOGY"
     },
     "Internships (Philippines Only)": {
         name: "Internships (Philippines Only)",
@@ -52,7 +57,8 @@ export const CATEGORIES: Record<string, Category> = {
             "How do you handle multiple tasks or deadlines in a learning environment?",
             "How do you approach learning a new skill or tool quickly?",
             "How do you ensure accuracy and attention to detail in your work?"
-        ]
+        ],
+        agentKey: "INTERNSHIP"
     },
     "Administrative / Support Roles": {
         name: "Administrative / Support Roles",
@@ -62,7 +68,8 @@ export const CATEGORIES: Record<string, Category> = {
             "How do you prioritize tasks when managing multiple responsibilities?",
             "How do you use office tools like Excel, Google Workspace, or HRIS in your work?",
             "Can you share a time you suggested improvements to existing administrative processes?"
-        ]
+        ],
+        agentKey: "ADMIN"
     },
     "Marketing & Research": {
         name: "Marketing & Research",
@@ -72,7 +79,8 @@ export const CATEGORIES: Record<string, Category> = {
             "How do you manage deadlines while maintaining quality in content or research?",
             "How do you adapt messaging for different audiences or platforms?",
             "Can you share an example of using analytics or reports to improve results?"
-        ]
+        ],
+        agentKey: "MARKETING"
     }
 };
 
