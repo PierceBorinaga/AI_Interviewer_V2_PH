@@ -27,22 +27,20 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <div className="flex min-h-screen relative overflow-x-hidden">
-            {/* Liquid glass background overlay (blur removed) */}
-            <div className="fixed inset-0 bg-white/5 -z-10"></div>
-            
+            {/* Removed Liquid glass background overlay */}
+
             {/* Video Background */}
             <video
               autoPlay
               loop
               muted
               playsInline
-              className="fixed top-0 left-0 w-full h-full object-cover -z-20 transition-all duration-300 dark:invert dark:opacity-80 opacity-60"
+              className="fixed top-0 left-0 w-full h-full object-cover -z-20 transition-all duration-300 dark:opacity-80 opacity-60"
             >
               <source src="https://www.pexels.com/download/video/10922866/" type="video/mp4" />
             </video>
 
-            {/* Overlay for better readability */}
-            <div className="fixed top-0 left-0 w-full h-full bg-black/20 dark:bg-black/40 -z-10"></div>
+            {/* Removed Overlay for better readability */}
 
             <Sidebar />
             <main className="flex-1 ml-28 p-8 transition-all duration-300 relative z-20">
