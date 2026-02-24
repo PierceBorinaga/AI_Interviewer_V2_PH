@@ -12,19 +12,10 @@ export default function Home() {
         <ThemeToggle />
       </div>
 
-      {/* Video Background */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="fixed top-0 left-0 w-full h-full object-cover -z-10 invert"
-      >
-        <source src="https://www.pexels.com/download/video/10922866/" type="video/mp4" />
-      </video>
-
-      {/* Overlay for better readability */}
-      <div className="fixed top-0 left-0 w-full h-full bg-black/20 -z-10"></div>
+      {/* Theme Toggle - Fixed top right */}
+      <div className="absolute top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
 
       {/* Content */}
       <div className="relative z-10 max-w-4xl mx-auto py-12">

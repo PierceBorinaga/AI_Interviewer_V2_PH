@@ -23,6 +23,8 @@ export function InterviewClient({ token, category, firstName }: InterviewClientP
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const messagesRef = useRef<{ role: 'user' | 'agent', text: string }[]>([]);
     const hasProcessed = useRef(false);
+    const [timeLeft, setTimeLeft] = useState(600); // 10 minutes in seconds
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
 
     // Keep messagesRef in sync with state
     useEffect(() => {
@@ -143,6 +145,20 @@ export function InterviewClient({ token, category, firstName }: InterviewClientP
                 throw new Error(errorData.error || "Failed to get session token");
             }
 
+            // Start the 10-minute timer
+            setTimeLeft(600);
+            if (timerRef.current) clearInterval(timerRef.current);
+            timerRef.current = setInterval(() => {
+                setTimeLeft((prev) => {
+                    if (prev <= 1) {
+                        clearInterval(timerRef.current!);
+                        endInterview();
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+
             const data = await response.json();
             const signedUrl = data.signed_url || data.signedUrl;
             const conversationToken = data.conversation_token || data.token;
@@ -170,6 +186,7 @@ export function InterviewClient({ token, category, firstName }: InterviewClientP
 
     const endInterview = useCallback(async () => {
         try {
+            if (timerRef.current) clearInterval(timerRef.current);
             const conversationId = conversation.getId();
             await conversation.endSession();
             handleInterviewCompletion(conversationId);
@@ -222,6 +239,9 @@ export function InterviewClient({ token, category, firstName }: InterviewClientP
                                     <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
                                     Live Session
                                 </div>
+                                <div className="text-3xl font-mono font-black tracking-widest text-[var(--color-castleton-green)] dark:text-[var(--color-saffaron)] drop-shadow-md">
+                                    {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
+                                </div>
                                 <button
                                     onClick={toggleMute}
                                     className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold border ${isMuted ? 'bg-red-500/10 text-red-500 border-red-500/20' : 'bg-black/5 dark:bg-white/5 text-[var(--mute-text)] border-current/10'}`}
@@ -272,7 +292,13 @@ export function InterviewClient({ token, category, firstName }: InterviewClientP
                                 <p className="text-[var(--mute-text)] leading-relaxed">
                                     Answer questions clearly and naturally. You can use your voice or the text chat.
                                 </p>
-                                <div className="grid grid-cols-2 gap-4">
+                                <ul className="text-[var(--mute-text)] text-sm space-y-2 list-disc pl-4">
+                                    <li><strong className="text-[var(--foreground)] font-semibold">Quiet Environment:</strong> Please ensure your surroundings are silent and free from distractions.</li>
+                                    <li><strong className="text-[var(--foreground)] font-semibold">Stable Internet:</strong> A strong, high-speed connection is required.</li>
+                                    <li><strong className="text-[var(--foreground)] font-semibold">Audio Check:</strong> Ensure your microphone is clear and working properly.</li>
+                                    <li><strong className="text-[var(--foreground)] font-semibold">Device:</strong> Laptop or desktop recommended.</li>
+                                </ul>
+                                <div className="grid grid-cols-3 gap-4">
                                     <div className="p-4 bg-black/5 dark:bg-white/5 rounded-2xl border border-current/5">
                                         <div className="text-[var(--color-castleton-green)] dark:text-[var(--color-saffaron)] font-bold text-lg">5-7</div>
                                         <div className="text-[10px] text-[var(--mute-text)] uppercase font-bold">Questions</div>
@@ -280,6 +306,10 @@ export function InterviewClient({ token, category, firstName }: InterviewClientP
                                     <div className="p-4 bg-black/5 dark:bg-white/5 rounded-2xl border border-current/5">
                                         <div className="text-[var(--color-castleton-green)] dark:text-[var(--color-saffaron)] font-bold text-lg">Real-time</div>
                                         <div className="text-[10px] text-[var(--mute-text)] uppercase font-bold">AI Support</div>
+                                    </div>
+                                    <div className="p-4 bg-black/5 dark:bg-white/5 rounded-2xl border border-current/5">
+                                        <div className="text-red-500 font-bold text-lg">10 Mins</div>
+                                        <div className="text-[10px] text-[var(--mute-text)] uppercase font-bold">Max Time</div>
                                     </div>
                                 </div>
                             </div>
