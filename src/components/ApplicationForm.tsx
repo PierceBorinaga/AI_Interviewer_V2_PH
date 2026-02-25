@@ -568,8 +568,8 @@ export function ApplicationForm() {
                     </button>
 
                     {status === "error" && (
-                        <div className="bg-red-50 border border-red-200 rounded-xl p-4 mt-4">
-                            <p className="text-red-700 text-sm text-center">
+                        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mt-4">
+                            <p className="text-red-400 text-sm text-center">
                                 {errorMessage || "Something went wrong. Please try again."}
                             </p>
                         </div>

@@ -17,19 +17,7 @@
 }
 
 :root {
-  /* Light Theme (Default) */
-  --background: var(--color-sea-salt);
-  --foreground: var(--color-dark-serpent);
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(4, 98, 65, 0.1);
-  --card-bg: rgba(255, 255, 255, 0.8);
-  --card-border: rgba(4, 98, 65, 0.05);
-  --mute-text: #667e71;
-  --accent-glow: rgba(4, 98, 65, 0.1);
-}
-
-.dark {
-  /* Dark Theme */
+  /* Enforced Dark Theme */
   --background: var(--color-obsidian);
   --foreground: #f3f4f6;
   --glass-bg: rgba(255, 255, 255, 0.05);

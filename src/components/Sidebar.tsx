@@ -1,16 +1,14 @@
 "use client";
 
-import { FileText, HelpCircle, Sun, Moon } from "lucide-react";
+import { FileText, HelpCircle } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { HelpPopup } from "./HelpPopup";
-import { useTheme } from "./ThemeContext";
 
 export function Sidebar() {
     const [showHelp, setShowHelp] = useState(false);
     const [mounted, setMounted] = useState(false);
-    const { theme, toggleTheme } = useTheme();
     const isActive = usePathname() === "/";
 
     useEffect(() => {

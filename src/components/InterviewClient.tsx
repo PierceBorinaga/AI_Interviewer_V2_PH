@@ -4,7 +4,6 @@ import { useConversation } from "@elevenlabs/react";
 import { useCallback, useState, useRef, useEffect } from "react";
 import { Robot } from "@/components/Robot";
 import { Loader2, Mic, MicOff } from "lucide-react";
-import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface InterviewClientProps {
     token: string;
@@ -197,10 +196,6 @@ export function InterviewClient({ token, category, firstName }: InterviewClientP
 
     return (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 relative">
-            {/* Theme Toggle mapped to top right corner of the interview client */}
-            <div className="absolute top-0 right-0 z-50">
-                <ThemeToggle />
-            </div>
 
             {isProcessing && (
                 <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex flex-col items-center justify-center text-white p-4">

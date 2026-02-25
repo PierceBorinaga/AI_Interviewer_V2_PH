@@ -70,8 +70,8 @@ export function FileUpload({ onFileSelect, selectedFile }: FileUploadProps) {
                     onDrop={handleDrop}
                     className={`relative h-40 w-full rounded-2xl border-2 border-dashed transition-all duration-300 flex flex-col items-center justify-center cursor-pointer
             ${isDragging
-                            ? "border-accent-purple bg-purple-50 scale-[1.02]"
-                            : "border-gray-300 hover:border-accent-purple hover:bg-gray-50"
+                            ? "border-[var(--color-saffaron)] bg-white/10 scale-[1.02]"
+                            : "border-white/10 hover:border-white/30 hover:bg-white/5"
                         }`}
                 >
                     <input
@@ -81,7 +81,7 @@ export function FileUpload({ onFileSelect, selectedFile }: FileUploadProps) {
                         accept=".pdf"
                         className="hidden"
                     />
-                    <div className="p-4 rounded-full bg-purple-100 text-accent-purple mb-3">
+                    <div className="p-4 rounded-full bg-white/10 text-white mb-3">
                         <UploadCloud size={24} />
                     </div>
                     <p className="text-sm text-gray-300 font-medium">
@@ -92,8 +92,8 @@ export function FileUpload({ onFileSelect, selectedFile }: FileUploadProps) {
                     </p>
                 </div>
             ) : (
-                <div className="relative h-20 w-full rounded-2xl bg-white border border-gray-200 flex items-center px-4 shadow-sm animate-in fade-in zoom-in duration-300">
-                    <div className="p-2 rounded-lg bg-red-100 text-red-500 mr-4">
+                <div className="relative h-20 w-full rounded-2xl bg-white/5 border border-white/10 flex items-center px-4 shadow-sm animate-in fade-in zoom-in duration-300">
+                    <div className="p-2 rounded-lg bg-red-500/10 text-red-500 mr-4">
                         <FileIcon size={20} />
                     </div>
                     <div className="flex-1 overflow-hidden">
@@ -106,7 +106,7 @@ export function FileUpload({ onFileSelect, selectedFile }: FileUploadProps) {
                     </div>
                     <button
                         onClick={removeFile}
-                        className="p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-red-500 transition-colors"
+                        className="p-1 rounded-full hover:bg-white/10 text-gray-400 hover:text-red-500 transition-colors"
                     >
                         <X size={20} />
                     </button>

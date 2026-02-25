@@ -35,7 +35,7 @@ export default function RootLayout({
               loop
               muted
               playsInline
-              className="fixed top-0 left-0 w-full h-full object-cover -z-20 transition-all duration-300 dark:opacity-80 opacity-60"
+              className="fixed top-0 left-0 w-full h-full object-cover -z-20 transition-all duration-300 opacity-80 invert"
             >
               <source src="https://www.pexels.com/download/video/10922866/" type="video/mp4" />
             </video>

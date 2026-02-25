@@ -2,21 +2,10 @@
 // Uncomment this section and remove the MaintenancePage import to restore the application form
 
 import { ApplicationForm } from "@/components/ApplicationForm";
-import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function Home() {
   return (
     <div className="relative min-h-screen">
-      {/* Theme Toggle - Fixed top right */}
-      <div className="absolute top-4 right-4 z-50">
-        <ThemeToggle />
-      </div>
-
-      {/* Theme Toggle - Fixed top right */}
-      <div className="absolute top-4 right-4 z-50">
-        <ThemeToggle />
-      </div>
-
       {/* Content */}
       <div className="relative z-10 max-w-4xl mx-auto py-12">
         <header className="mb-8 animate-in slide-in-from-bottom-4 duration-700">
