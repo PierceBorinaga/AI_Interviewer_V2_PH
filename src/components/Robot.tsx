@@ -140,7 +140,7 @@ export const Robot = ({ isSpeaking = false }: RobotProps) => {
 
             {/* Hover Caption - Cleaner */}
             <div className={`absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-[var(--mute-text)] text-[9px] uppercase tracking-[0.3em] font-bold transition-all duration-500 ${isHovered || isSpeaking ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1'}`}>
-                {isSpeaking ? "Analyzing..." : "Neural Link"}
+                {isSpeaking ? "Analyzing..." : "Cebee"}
             </div>
         </div>
     );
