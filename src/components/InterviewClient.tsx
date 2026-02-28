@@ -206,12 +206,13 @@ export function InterviewClient({ token, category, firstName }: InterviewClientP
             )}
 
             <header className="mb-10 text-center md:text-left mt-12 md:mt-0">
-                <div className="flex items-center justify-center md:justify-start gap-2 mb-4 text-[var(--color-castleton-green)] dark:text-[var(--color-saffaron)] font-semibold tracking-widest uppercase text-xs">
-                    <span className="w-6 h-[1px] bg-current opacity-50"></span>
-                    AI Interviewer Platform
-                    <span className="ml-2 opacity-60 normal-case font-normal text-[10px] tracking-normal italic">
-                        powered by Lifewood PH
-                    </span>
+                <div className="flex flex-col items-center md:items-start gap-2 mb-4">
+                    <div className="flex items-center gap-2 text-[var(--color-castleton-green)] dark:text-[var(--color-saffaron)] font-semibold tracking-widest uppercase text-sm px-5">
+                        AI Interviewer Platform
+                    </div>
+                    <div className="mt-1 px-5 py-2 bg-black dark:bg-white/10 text-white dark:text-[var(--color-saffaron)] rounded-full text-xs font-bold tracking-widest uppercase border border-white/10 shadow-lg inline-block">
+                        POWERED BY LIFEWOOD PH
+                    </div>
                 </div>
                 <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-4 text-[var(--foreground)]">
                     {firstName ? `Welcome, ${firstName}` : "Welcome Candidate"}

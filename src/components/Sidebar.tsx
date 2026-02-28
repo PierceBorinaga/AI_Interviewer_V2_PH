@@ -36,9 +36,6 @@ export function Sidebar() {
                         )}
                     </Link>
 
-                    {/* Spacer */}
-                    <div className="flex-1"></div>
-
                     {/* Help Button */}
                     <button
                         onClick={() => setShowHelp(true)}
@@ -47,6 +44,9 @@ export function Sidebar() {
                     >
                         <HelpCircle size={24} />
                     </button>
+
+                    {/* Spacer */}
+                    <div className="flex-1"></div>
                 </nav>
             </aside>
 
