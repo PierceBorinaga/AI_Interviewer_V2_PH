@@ -45,6 +45,11 @@ export function Sidebar() {
                         <HelpCircle size={24} />
                     </button>
 
+                    {/* Version Number */}
+                    <div className="mt-[-28px] text-[8px] font-black text-gray-400/30 dark:text-white/20 uppercase tracking-[0.2em] select-none text-center w-full">
+                        VERSION 2.0
+                    </div>
+
                     {/* Spacer */}
                     <div className="flex-1"></div>
                 </nav>
